@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriIntel | Precision Crop Advisory System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2e7d32;
+      --primary-light: #81c784;
+      --primary-dark: #1b5e20;
+      --secondary: #1565c0;
+      --secondary-light: #5e92f3;
+      --background: #f5f7fa;
+      --card-bg: #ffffff;
+      --text-dark: #263238;
+      --text-medium: #455a64;
+      --text-light: #90a4ae;
+      --border: #e0e0e0;
+      --success: #388e3c;
+      --warning: #f57c00;
+      --error: #d32f2f;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--background);
+      color: var(--text-dark);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .card-header {
+      background: var(--primary);
+      color: white;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+
+    .card-subtitle {
+      font-size: 0.875rem;
+      opacity: 0.9;
+      font-weight: 400;
+    }
+
+    .card-body {
+      padding: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-medium);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      font-size: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      transition: var(--transition);
+      background-color: white;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.875rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-block {
+      display: flex;
+      width: 100%;
+    }
+
+    .result-container {
+      margin-top: 2rem;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      opacity: 0;
+      height: 0;
+      transition: var(--transition);
+    }
+
+    .result-container.show {
+      opacity: 1;
+      height: auto;
+    }
+
+    .result-section {
+      background: white;
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .result-section:last-child {
+      border-bottom: none;
+    }
+
+    .result-section-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .result-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .result-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-light);
+      margin-bottom: 0.25rem;
+    }
+
+    .result-value {
+      font-size: 1.125rem;
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+
+    .result-value-lg {
+      font-size: 1.5rem;
+    }
+
+    .weather-icon {
+      font-size: 1.5rem;
+      margin-right: 0.5rem;
+    }
+
+    .crop-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+
+    .crop-tag {
+      background-color: rgba(46, 125, 50, 0.1);
+      color: var(--primary);
+      padding: 0.375rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 2rem;
+      height: 2rem;
+      border: 3px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .error-message {
+      background-color: rgba(211, 47, 47, 0.1);
+      color: var(--error);
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      margin-top: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .divider {
+      height: 1px;
+      background-color: var(--border);
+      margin: 1.5rem 0;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+
+    .data-table th {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      background-color: var(--background);
+      color: var(--text-medium);
+      font-weight: 500;
+    }
+
+    .data-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .text-success {
+      color: var(--success);
+    }
+
+    .text-warning {
+      color: var(--warning);
+    }
+
+    .text-error {
+      color: var(--error);
+    }
+
+    .text-muted {
+      color: var(--text-light);
+    }
+
+    .mt-3 {
+      margin-top: 1.5rem;
+    }
+
+    .mb-3 {
+      margin-bottom: 1.5rem;
+    }
+
+    .d-flex {
+      display: flex;
+    }
+
+    .align-items-center {
+      align-items: center;
+    }
+
+    .justify-content-between {
+      justify-content: space-between;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem;
+      }
+      
+      .card-body {
+        padding: 1.5rem;
+      }
+      
+      .result-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Professional animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-fade-in {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    /* Professional decorative elements */
+    .watermark {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      font-size: 0.75rem;
+      color: var(--text-light);
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card animate-fade-in">
+      <div class="card-header">
+        <h1 class="card-title">
+          <i class="fas fa-leaf"></i>
+          AgriIntel Crop Advisory
+        </h1>
+        <p class="card-subtitle">AI-powered precision agriculture recommendations</p>
+      </div>
+      
+      <div class="card-body">
+        <div class="form-group">
+          <label for="locationInput" class="form-label">Location</label>
+          <div class="d-flex align-items-center" style="gap: 0.5rem;">
+            <input type="text" id="locationInput" class="form-control" placeholder="Enter city or coordinates">
+            <button id="locationBtn" class="btn btn-primary" style="padding: 0.875rem;">
+              <i class="fas fa-map-marker-alt"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="soilTypeSelect" class="form-label">Soil Type (Optional)</label>
+          <select id="soilTypeSelect" class="form-control">
+            <option value="">Select soil type...</option>
+            <option value="clay">Clay</option>
+            <option value="sandy">Sandy</option>
+            <option value="loamy">Loamy</option>
+            <option value="silty">Silty</option>
+            <option value="peaty">Peaty</option>
+            <option value="chalky">Chalky</option>
+          </select>
+        </div>
+        
+        <button id="analyzeBtn" class="btn btn-primary btn-block">
+          <i class="fas fa-chart-line"></i> Generate Recommendations
+        </button>
+        
+        <div class="loading" id="loading">
+          <div class="loading-spinner"></div>
+          <p class="text-muted mt-3">Analyzing agricultural data...</p>
+        </div>
+        
+        <div id="resultContainer" class="result-container">
+          <div class="result-section">
+            <h3 class="result-section-title">
+              <i class="fas fa-map-marked-alt"></i>
+              Location Analysis
+            </h3>
+            <div class="result-grid" id="locationResults">
+              <!-- Filled by JavaScript -->
+            </div>
+          </div>
+          
+          <div class="divider"></div>
+          
+          <div class="result-section">
+            <h3 class="result-section-title">
+              <i class="fas fa-temperature-low"></i>
+              Climate Conditions
+            </h3>
+            <div class="result-grid" id="climateResults">
+              <!-- Filled by JavaScript -->
+            </div>
+          </div>
+          
+          <div class="divider"></div>
+          
+          <div class="result-section">
+            <h3 class="result-section-title">
+              <i class="fas fa-seedling"></i>
+              Crop Recommendations
+            </h3>
+            <div id="cropRecommendations">
+              <!-- Filled by JavaScript -->
+            </div>
+          </div>
+          
+          <div class="divider"></div>
+          
+          <div class="result-section">
+            <h3 class="result-section-title">
+              <i class="fas fa-calendar-alt"></i>
+              Planting Calendar
+            </h3>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Crop</th>
+                  <th>Optimal Planting</th>
+                  <th>Harvest Period</th>
+                </tr>
+              </thead>
+              <tbody id="plantingCalendar">
+                <!-- Filled by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div id="errorContainer"></div>
+      </div>
+    </div>
+    
+    <div class="watermark">
+      AgriIntel v1.0 | Precision Agriculture System
+    </div>
+  </div>
+
+  <script>
+    // Enhanced crop database with planting information
+    const cropDatabase = {
+      // Rice varieties
+      "Rice": {
+        minTemp: 20,
+        maxTemp: 35,
+        minHumidity: 60,
+        planting: "June-July",
+        harvest: "October-November",
+        soil: ["clay", "loamy"]
+      },
+      "Basmati Rice": {
+        minTemp: 22,
+        maxTemp: 32,
+        minHumidity: 65,
+        planting: "July-August",
+        harvest: "November-December",
+        soil: ["clay", "loamy"]
+      },
+      
+      // Wheat varieties
+      "Wheat": {
+        minTemp: 10,
+        maxTemp: 25,
+        maxHumidity: 60,
+        planting: "November-December",
+        harvest: "March-April",
+        soil: ["loamy", "silty"]
+      },
+      "Durum Wheat": {
+        minTemp: 12,
+        maxTemp: 28,
+        maxHumidity: 55,
+        planting: "October-November",
+        harvest: "April-May",
+        soil: ["loamy", "silty"]
+      },
+      
+      // Other major crops
+      "Maize": {
+        minTemp: 18,
+        maxTemp: 27,
+        minHumidity: 50,
+        planting: "May-June",
+        harvest: "September-October",
+        soil: ["loamy", "sandy"]
+      },
+      "Sugarcane": {
+        minTemp: 20,
+        maxTemp: 35,
+        minHumidity: 65,
+        planting: "October-November",
+        harvest: "December-March (12-18 months)",
+        soil: ["clay", "loamy"]
+      },
+      "Cotton": {
+        minTemp: 21,
+        maxTemp: 30,
+        minHumidity: 50,
+        planting: "April-May",
+        harvest: "October-December",
+        soil: ["black", "sandy"]
+      },
+      "Soybean": {
+        minTemp: 15,
+        maxTemp: 30,
+        minHumidity: 50,
+        planting: "June-July",
+        harvest: "September-October",
+        soil: ["loamy", "silty"]
+      },
+      
+      // Pulses
+      "Chickpea": {
+        minTemp: 10,
+        maxTemp: 25,
+        maxHumidity: 50,
+        planting: "October-November",
+        harvest: "February-March",
+        soil: ["sandy", "loamy"]
+      },
+      "Lentil": {
+        minTemp: 10,
+        maxTemp: 25,
+        maxHumidity: 50,
+        planting: "October-November",
+        harvest: "February-March",
+        soil: ["loamy", "silty"]
+      },
+      
+      // Vegetables
+      "Potato": {
+        minTemp: 15,
+        maxTemp: 20,
+        minHumidity: 60,
+        planting: "October-November (Rabi)",
+        harvest: "January-February",
+        soil: ["sandy", "loamy"]
+      },
+      "Tomato": {
+        minTemp: 18,
+        maxTemp: 27,
+        minHumidity: 50,
+        planting: "June-July (Kharif), November (Rabi)",
+        harvest: "3-4 months after planting",
+        soil: ["loamy", "silty"]
+      },
+      
+      // Fruits
+      "Mango": {
+        minTemp: 24,
+        maxTemp: 27,
+        minHumidity: 50,
+        planting: "July-August",
+        harvest: "March-June (varies by variety)",
+        soil: ["loamy", "sandy"]
+      },
+      "Banana": {
+        minTemp: 15,
+        maxTemp: 35,
+        minHumidity: 70,
+        planting: "June-July, September-October",
+        harvest: "12-15 months after planting",
+        soil: ["clay", "loamy"]
+      }
+    };
+
+    // Regional crop preferences with weights
+    const regionalCrops = {
+      "mumbai": { "Rice": 0.9, "Sugarcane": 0.8, "Mango": 0.7, "Coconut": 0.6 },
+      "delhi": { "Wheat": 0.9, "Mustard": 0.8, "Barley": 0.7, "Vegetables": 0.6 },
+      "pune": { "Jowar": 0.8, "Bajra": 0.7, "Soybean": 0.7, "Grapes": 0.9 },
+      "hyderabad": { "Paddy": 0.8, "Maize": 0.7, "Cotton": 0.8, "Chilli": 0.6 },
+      "bangalore": { "Ragi": 0.9, "Maize": 0.7, "Groundnut": 0.7, "Coffee": 0.8 },
+      "kolkata": { "Rice": 0.9, "Jute": 0.8, "Pulses": 0.7, "Tea": 0.7 },
+      "chennai": { "Rice": 0.9, "Banana": 0.8, "Groundnut": 0.7, "Sugarcane": 0.6 },
+      "ahmedabad": { "Cotton": 0.9, "Groundnut": 0.8, "Bajra": 0.7, "Wheat": 0.6 },
+      "jaipur": { "Bajra": 0.9, "Wheat": 0.8, "Barley": 0.7, "Pulses": 0.6 },
+      "lucknow": { "Rice": 0.8, "Wheat": 0.9, "Sugarcane": 0.8, "Potato": 0.7 }
+    };
+
+    // Soil suitability mapping
+    const soilSuitability = {
+      "clay": ["Rice", "Sugarcane", "Banana", "Wheat"],
+      "sandy": ["Groundnut", "Bajra", "Potato", "Maize"],
+      "loamy": ["Wheat", "Cotton", "Soybean", "Pulses", "Vegetables"],
+      "silty": ["Wheat", "Barley", "Oilseeds", "Vegetables"],
+      "peaty": ["Rice", "Vegetables", "Fruits"],
+      "chalky": ["Barley", "Sugar beet", "Spinach"]
+    };
+
+    function getWeatherIcon(condition) {
+      const conditionLower = condition.toLowerCase();
+      if (conditionLower.includes("rain")) return "🌧️";
+      if (conditionLower.includes("cloud")) return "☁️";
+      if (conditionLower.includes("sun") || conditionLower.includes("clear")) return "☀️";
+      if (conditionLower.includes("snow")) return "❄️";
+      if (conditionLower.includes("thunder") || conditionLower.includes("storm")) return "⛈️";
+      if (conditionLower.includes("fog") || conditionLower.includes("mist")) return "🌫️";
+      return "🌤️";
+    }
+
+    function getSeason(date) {
+      const month = date.getMonth() + 1;
+      if (month >= 3 && month <= 5) return "Summer";
+      if (month >= 6 && month <= 9) return "Monsoon";
+      if (month >= 10 && month <= 11) return "Autumn";
+      return "Winter";
+    }
+
+    function getRegionalCrops(cityName) {
+      const city = cityName.toLowerCase();
+      for (let region in regionalCrops) {
+        if (city.includes(region)) {
+          return regionalCrops[region];
+        }
+      }
+      return { "Rice": 0.8, "Wheat": 0.8, "Maize": 0.7 };
+    }
+
+    function getSoilSuitableCrops(soilType) {
+      if (!soilType) return null;
+      return soilSuitability[soilType] || null;
+    }
+
+    function recommendCrops(weatherData, soilType) {
+      const temp = weatherData.main.temp;
+      const humidity = weatherData.main.humidity;
+      const regionCrops = getRegionalCrops(weatherData.name);
+      const soilCrops = getSoilSuitableCrops(soilType);
+      const currentSeason = getSeason(new Date());
+      
+      // Score crops based on multiple factors
+      const cropScores = {};
+      
+      // 1. Score by temperature suitability
+      for (const [crop, data] of Object.entries(cropDatabase)) {
+        let score = 0;
+        
+        // Temperature match (40% weight)
+        if (temp >= data.minTemp && temp <= data.maxTemp) {
+          score += 0.4;
+        }
+        
+        // Humidity match (30% weight)
+        if ((data.minHumidity && humidity >= data.minHumidity) || 
+            (data.maxHumidity && humidity <= data.maxHumidity)) {
+          score += 0.3;
+        }
+        
+        // Regional preference (20% weight)
+        if (regionCrops[crop]) {
+          score += regionCrops[crop] * 0.2;
+        }
+        
+        // Soil suitability (10% weight)
+        if (soilCrops && soilCrops.includes(crop)) {
+          score += 0.1;
+        }
+        
+        cropScores[crop] = score;
+      }
+      
+      // Sort crops by score
+      const sortedCrops = Object.keys(cropScores).sort((a, b) => cropScores[b] - cropScores[a]);
+      
+      // Return top 5 crops with their scores
+      return sortedCrops.slice(0, 5).map(crop => ({
+        name: crop,
+        score: cropScores[crop],
+        planting: cropDatabase[crop].planting,
+        harvest: cropDatabase[crop].harvest
+      }));
+    }
+
+    function showLoading(show) {
+      document.getElementById("loading").style.display = show ? "block" : "none";
+    }
+
+    function showError(message) {
+      const errorContainer = document.getElementById("errorContainer");
+      errorContainer.innerHTML = `
+        <div class="error-message">
+          <i class="fas fa-exclamation-circle"></i>
+          ${message}
+        </div>
+      `;
+      
+      document.getElementById("resultContainer").classList.remove("show");
+    }
+
+    function clearResults() {
+      document.getElementById("locationResults").innerHTML = "";
+      document.getElementById("climateResults").innerHTML = "";
+      document.getElementById("cropRecommendations").innerHTML = "";
+      document.getElementById("plantingCalendar").innerHTML = "";
+      document.getElementById("errorContainer").innerHTML = "";
+      document.getElementById("resultContainer").classList.remove("show");
+    }
+
+    function formatResults(weatherData, crops, soilType) {
+      const weatherIcon = getWeatherIcon(weatherData.weather[0].description);
+      const currentSeason = getSeason(new Date());
+      
+      // 1. Location Analysis
+      document.getElementById("locationResults").innerHTML = `
+        <div class="result-item">
+          <div class="result-label">Location</div>
+          <div class="result-value">${weatherData.name}, ${weatherData.sys.country || 'N/A'}</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Coordinates</div>
+          <div class="result-value">${weatherData.coord.lat.toFixed(2)}°N, ${weatherData.coord.lon.toFixed(2)}°E</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Elevation</div>
+          <div class="result-value">${weatherData.main.sea_level ? `${weatherData.main.sea_level}m` : 'N/A'}</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Current Season</div>
+          <div class="result-value">${currentSeason}</div>
+        </div>
+      `;
+      
+      // 2. Climate Conditions
+      document.getElementById("climateResults").innerHTML = `
+        <div class="result-item">
+          <div class="result-label">Temperature</div>
+          <div class="result-value">${weatherData.main.temp}°C</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Feels Like</div>
+          <div class="result-value">${weatherData.main.feels_like}°C</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Humidity</div>
+          <div class="result-value">${weatherData.main.humidity}%</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Conditions</div>
+          <div class="result-value">
+            <span class="weather-icon">${weatherIcon}</span>
+            ${weatherData.weather[0].description}
+          </div>
+        </div>
+      `;
+      
+      // 3. Crop Recommendations
+      let cropsHTML = `
+        <div class="result-item mb-3">
+          <div class="result-label">Optimal Crops</div>
+          <div class="result-value">Based on current conditions and ${soilType ? soilType + ' soil' : 'regional data'}</div>
+        </div>
+        <div class="crop-list">
+      `;
+      
+      crops.forEach(crop => {
+        const suitability = crop.score >= 0.8 ? "text-success" : crop.score >= 0.6 ? "" : "text-warning";
+        cropsHTML += `
+          <div class="crop-tag ${suitability}">
+            ${crop.name} (${(crop.score * 100).toFixed(0)}%)
+          </div>
+        `;
+      });
+      
+      cropsHTML += `</div>`;
+      document.getElementById("cropRecommendations").innerHTML = cropsHTML;
+      
+      // 4. Planting Calendar
+      let calendarHTML = '';
+      crops.forEach(crop => {
+        calendarHTML += `
+          <tr>
+            <td>${crop.name}</td>
+            <td>${crop.planting}</td>
+            <td>${crop.harvest}</td>
+          </tr>
+        `;
+      });
+      document.getElementById("plantingCalendar").innerHTML = calendarHTML;
+      
+      // Show results
+      document.getElementById("resultContainer").classList.add("show");
+    }
+
+    async function getWeatherData() {
+      const location = document.getElementById("locationInput").value.trim();
+      const soilType = document.getElementById("soilTypeSelect").value;
+      
+      if (!location) {
+        showError("Please enter a location");
+        return;
+      }
+      
+      const apiKey = "78fd66d611dc14f93972a5923b9cf237";
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}&units=metric`;
+      
+      clearResults();
+      showLoading(true);
+      
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (response.ok) {
+          const recommendedCrops = recommendCrops(data, soilType);
+          formatResults(data, recommendedCrops, soilType);
+        } else {
+          showError(data.message || "Failed to fetch weather data");
+        }
+      } catch (error) {
+        showError("Network error. Please try again.");
+        console.error("API Error:", error);
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    // Event listeners
+    document.getElementById("analyzeBtn").addEventListener("click", getWeatherData);
+    
+    document.getElementById("locationInput").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        getWeatherData();
+      }
+    });
+    
+    // Geolocation button
+    document.getElementById("locationBtn").addEventListener("click", function() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          position => {
+            const { latitude, longitude } = position.coords;
+            document.getElementById("locationInput").value = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+          },
+          error => {
+            showError("Geolocation error: " + error.message);
+          }
+        );
+      } else {
+        showError("Geolocation is not supported by your browser");
+      }
+    });
+  </script>
+</body>
+</html>
